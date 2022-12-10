@@ -1,6 +1,5 @@
 import { connection } from "../database/db.js";
 export async function listCategories(req, res)  {
-    const a = "Jose";
     try {const produtos = await connection.query(`SELECT * FROM categories`,);
     res.send(produtos.rows);
 } catch(err){
