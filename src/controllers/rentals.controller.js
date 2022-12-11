@@ -2,6 +2,31 @@ import { connection } from "../database/db.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res) {
+    const{customerId, gameId} = req.query;
+    if(customerId){
+        try{
+            const getCustomerId = await connection.query(`SELECT rentals.*, JSON_BUILD_OBJECT('id', customers.id, 'name', customers.name) AS customers, JSON_BUILD_OBJECT('id', games.id,'name', games.name,'categoryId', games."categoryId", 'categoryName', categories.name) AS games FROM rentals JOIN customers ON customers.id = "customerId" JOIN games ON games.id = "gameId" JOIN categories ON categories.id = games."categoryId" WHERE "customerId" = $1`,[customerId])
+            if(getCustomerId.rows.length === 0){
+                return res.status(404).send("Id nao encontrado no alugel do cliente")
+            }
+     return res.send(getCustomerId.rows)
+        }catch(err){
+            console.log(err)
+            return res.status(501).send(err)
+        }
+    }
+    if(gameId){
+        try{
+            const getgameId = await connection.query(`SELECT rentals.*, JSON_BUILD_OBJECT('id', customers.id, 'name', customers.name) AS customers, JSON_BUILD_OBJECT('id', games.id,'name', games.name,'categoryId', games."categoryId", 'categoryName', categories.name) AS games FROM rentals JOIN customers ON customers.id = "customerId" JOIN games ON games.id = "gameId" JOIN categories ON categories.id = games."categoryId" WHERE "gameId" = $1`,[gameId])
+            if(getgameId.rows.length === 0){
+                return res.status(404).send("Id do jogo nao encontrado na lista de alugueis")
+            }
+     return res.send(getgameId.rows)
+        }catch(err){
+            console.log(err)
+            return res.status(501).send(err)
+        }
+    }
   try {
     const getRental = await connection.query(`SELECT rentals.*, JSON_BUILD_OBJECT('id', customers.id, 'name', customers.name) AS customers, JSON_BUILD_OBJECT('id', games.id,'name', games.name,'categoryId', games."categoryId", 'categoryName', categories.name) AS games FROM rentals JOIN customers ON customers.id = "customerId" JOIN games ON games.id = "gameId" JOIN categories ON categories.id = games."categoryId" `);
   return res.send(getRental.rows)
