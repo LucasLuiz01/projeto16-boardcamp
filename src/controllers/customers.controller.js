@@ -20,11 +20,14 @@ export async function getCustomersCpf (req, res) {
 }
 export async function getCustomersById(req, res){
   const idP = req.params.id
-  console.log(idP.rows)
   try{
     const list = await connection.query("SELECT * FROM customers WHERE id = $1", [idP]);
-
-    res.send(list.rows[0])
+    if(list.rows.length === 0) {
+      return res.sendStatus(404)
+    }else{
+      return res.send(list.rows[0]);
+    }
+    
   }catch(err){
     return res.status(500).send(err);
   }
@@ -32,9 +35,6 @@ export async function getCustomersById(req, res){
 
 export async function insertCustomers(req, res) {
   const { name, phone, cpf, birthday } = req.body;
-  console.log(typeof name);
-  console.log(typeof phone);
-  console.log(cpf.length);
   const cpfExist = await connection.query(
     `SELECT * FROM customers WHERE cpf='${cpf}'`
   );
@@ -50,4 +50,22 @@ export async function insertCustomers(req, res) {
   } catch (err) {
     return res.status(500).send(err);
   }
+}
+
+export async function updateUser (req, res){
+  const id = req.params.id;
+  const {name, phone, cpf, birthday} = req.body;
+  const cpfExist = await connection.query(
+    `SELECT * FROM customers WHERE cpf='${cpf}'`
+  );
+  if (cpfExist.rows.length > 0) {
+    return res.sendStatus(409);
+  }
+try {
+ await connection.query("UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5",[name, phone, cpf, birthday, id]);
+return res.send("USUARIO ATUALIZADO COM SUCCESO")
+}catch(err){
+  console.log(err);
+  return res.status(500).send(err)
+}
 }
