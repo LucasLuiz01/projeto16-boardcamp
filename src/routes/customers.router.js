@@ -4,9 +4,9 @@ import { insertCustomers, getCustomersCpf, getCustomersById, updateUser } from "
 
 const router = Router();
 
-router.get("/customer", getCustomersCpf);
-router.get("/customer/:id", getCustomersById)
-router.post("/customer", customersSchenaValidation, insertCustomers);
-router.put("/customer/:id", customersSchenaValidation, updateUser)
+router.get("/customers", getCustomersCpf);
+router.get("/customers/:id", getCustomersById)
+router.post("/customers", customersSchenaValidation, insertCustomers);
+router.put("/customers/:id", customersSchenaValidation, updateUser)
 
 export default router;

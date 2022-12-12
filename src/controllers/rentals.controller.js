@@ -62,10 +62,17 @@ export async function insertRentals(req, res) {
     "SELECT * FROM games WHERE id=$1",
     [gameId]
   );
+  const estoqueTotal = validateGameId.rows[0].stockTotal;
+  const aluguados = await connection.query(`SELECT * FROM rentals WHERE "gameId" = ${gameId} AND "returnDate" IS null;`)
+console.log("EstoqueTotal",estoqueTotal)
+console.log("aluguados",aluguados.rows)
+  if(aluguados.rows.length >= estoqueTotal){
+    return res.status(400).send("Jogo indisponivel, quantidades já alugadas");
+  }
   if (validateGameId.rows.length === 0) {
     return res.status(400).send("jogo nao encontrando");
   }
-  console.log(validateGameId.rows[0].pricePerDay);
+  
   const originalPrice = Number(validateGameId.rows[0].pricePerDay) * daysRented;
   try {
     const insertion = await connection.query(
@@ -101,7 +108,6 @@ export async function finalizarAluguel(req, res) {
     const rentDates = validation.rows[0].rentDate.getTime()
     const birthday = Date.now();
     const dias = Math.abs(parseInt((rentDates - birthday)/86400000))
-    console.log(dias)
     const te = validation.rows[0].originalPrice
     if(dias > validation.rows[0].daysRented){
       delayFee = (dias - validation.rows[0].daysRented) * te
