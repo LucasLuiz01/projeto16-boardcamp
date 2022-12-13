@@ -1,7 +1,7 @@
 import { connection } from "../database/db.js";
 
 export async function getCustomersCpf (req, res) {
-  const cpfQuery = Number(req.query.cpf);
+  const cpfQuery = req.query.cpf;
   console.log(typeof(cpfQuery))
   if(cpfQuery){
     try {
