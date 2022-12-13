@@ -1,12 +1,12 @@
 import { connection } from "../database/db.js";
 
 export async function getCustomersCpf (req, res) {
-  const cpfQ = req.query.cpf;
-  console.log(cpfQ)
-  if(cpfQ){
+  const cpfQuery = Number(req.query.cpf);
+  console.log(typeof(cpfQuery))
+  if(cpfQuery){
     try {
-      const buscaSem = await connection.query(`SELECT * FROM customers WHERE cpf LIKE '${cpfQ}%';`)
-      return res.send(buscaSem.rows);
+      const buscaCpf = await connection.query(`SELECT * FROM customers WHERE cpf LIKE '${cpfQuery}%';`)
+      return res.send(buscaCpf.rows);
   } catch(err) {
     return res.status(500).send(err);
   }
@@ -55,12 +55,12 @@ export async function insertCustomers(req, res) {
 export async function updateUser (req, res){
   const id = req.params.id;
   const {name, phone, cpf, birthday} = req.body;
-  const cpfExist = await connection.query(
-    `SELECT * FROM customers WHERE cpf='${cpf}'`
-  );
-  if (cpfExist.rows.length > 0) {
-    return res.sendStatus(409);
-  }
+  //const cpfExist = await connection.query(
+  //  `SELECT * FROM customers WHERE cpf='${cpf}'`
+  //);
+  //if (cpfExist.rows.length > 0) {
+   // return res.sendStatus(409);
+ // }
 try {
  await connection.query("UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5",[name, phone, cpf, birthday, id]);
 return res.send("USUARIO ATUALIZADO COM SUCCESO")
